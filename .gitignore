@@ -1,0 +1,67 @@
+# Archivos de entorno y configuración
+.env
+.env.local
+.env.*.local
+config.local.py
+
+# Archivos de Node.js
+node_modules/
+
+# Archivos de Python
+*__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Entornos virtuales
+*venv/
+env/
+ENV/
+.venv/
+.env/
+
+# Archivos de IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+.DS_Store
+
+# Archivos de logs
+*.log
+logs/
+log/
+
+# Archivos de base de datos
+*.sqlite3
+*.db
+
+# Archivos temporales
+*.tmp
+*.temp
+.coverage
+htmlcov/
+.pytest_cache/
+.tox/
+.nox/
+.coverage.*
+coverage.xml
+*.cover
+*.py,cover
+.hypothesis/
