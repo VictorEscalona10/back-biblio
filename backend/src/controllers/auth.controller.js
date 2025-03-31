@@ -68,7 +68,7 @@ export const login = async (req, res) => {
                 if (!isPasswordValid) {
                     return res.status(401).json({ error: "Invalid credentials" });
                 } else {
-                    const token = jwt.sign({ id: user.id, email: user.email, name: user.name}, JWT_SECRET);
+                    const token = jwt.sign({ id: user.id, email: user.email, name: user.name, is_admin: user.is_admin}, JWT_SECRET);
                     res.cookie('authToken', token, { httpOnly: true, secure: true, maxAge: 3600000 });
                     await supabase.from('users').update({ last_connection: new Date() }).eq('email', email);
                     return res.status(200).json({ message: "Logged in successfully"});

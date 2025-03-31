@@ -1,7 +1,7 @@
 import requests
 import flet as ft
-from decoded import decode_jwt  # Asegúrate de que decode_jwt esté correctamente implementado
-import webbrowser  # Para abrir el enlace en el navegador
+from decoded import decode_jwt 
+import webbrowser  
 
 BASE_URL = "http://localhost:3000"
 

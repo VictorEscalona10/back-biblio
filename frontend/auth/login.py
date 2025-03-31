@@ -64,7 +64,11 @@ def login(e, page, message, email_input, password_input):
         jwt_token = response.cookies.get("authToken")
         if jwt_token:
             page.client_storage.set("jwt", jwt_token)
-            page.go("/main")
+            decoded_token = decode_jwt(jwt_token)
+            if decoded_token.get("is_admin"):
+                page.add(ft.Text("Bienvenido administrador"))
+            else:
+                page.go("/main")
         else:
             message.value = "Error: No se recibió un token de autenticación."
             message.color = ft.colors.RED
