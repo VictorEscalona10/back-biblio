@@ -66,7 +66,7 @@ def login(e, page, message, email_input, password_input):
             page.client_storage.set("jwt", jwt_token)
             decoded_token = decode_jwt(jwt_token)
             if decoded_token.get("is_admin"):
-                page.add(ft.Text("Bienvenido administrador"))
+                page.go("/admin")
             else:
                 page.go("/main")
         else:

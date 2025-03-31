@@ -3,7 +3,7 @@ from utils.jwt_utils import decode_jwt
 from views.books_view import load_books, add_book_page
 from views.profile_view import load_profile
 
-def main_page(page: ft.Page):
+def admin_page(page: ft.Page):
     page.clean()
     page.bgcolor = '#212121'
 
