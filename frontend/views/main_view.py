@@ -3,11 +3,6 @@ from utils.jwt_utils import decode_jwt
 from views.books_view import load_books, add_book_page
 from views.profile_view import load_profile
 
-import flet as ft
-from utils.jwt_utils import decode_jwt
-from views.books_view import load_books, add_book_page
-from views.profile_view import load_profile
-
 def main_page(page: ft.Page):
     page.clean()
     page.bgcolor = '#212121'
@@ -22,6 +17,7 @@ def main_page(page: ft.Page):
     user_info = decode_jwt(jwt_token)
     user_name = user_info.get("name", "Usuario") if user_info else "Usuario"
     user_email = user_info.get("email", None) if user_info else None
+    print(user_email)
 
     page.title = f"Biblioteca - {user_name}"
 

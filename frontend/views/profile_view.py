@@ -6,7 +6,7 @@ def load_profile(page, content_panel, user_name, user_email):
     content_panel.controls.clear()
     try:
         # Hacer la petición para obtener los libros del usuario
-        response = requests.post(f"{BASE_URL}/books/user", json={"email": user_email})
+        response = requests.get(f"{BASE_URL}/books/user", json={"email": user_email})
         if response.status_code == 200:
             books = response.json().get("books", [])
             book_list = ft.ListView(
