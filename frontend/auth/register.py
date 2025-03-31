@@ -4,7 +4,7 @@ from utils.constants import BASE_URL
 
 def register_page(page: ft.Page):
     # Elementos para el registro
-    title = ft.Text("Registro", size=30, weight=ft.FontWeight.NORMAL, color=ft.colors.BLACK, text_align=ft.TextAlign.CENTER)
+    title = ft.Text("Registro", size=30, weight=ft.FontWeight.NORMAL, color=ft.colors.WHITE, text_align=ft.TextAlign.CENTER)
     register_message = ft.Text(value="", size=20)
     register_name_input = ft.TextField(label="Nombre completo", width=300)
     register_email_input = ft.TextField(label="Email", width=300, )
@@ -45,7 +45,7 @@ def register_page(page: ft.Page):
 
     page.add(ft.Container(
         content=col,
-        bgcolor='#ffffff',
+        bgcolor='#424242',
         border_radius=5,
         padding=50,
         width=500,

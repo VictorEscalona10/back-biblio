@@ -3,8 +3,14 @@ from utils.jwt_utils import decode_jwt
 from views.books_view import load_books, add_book_page
 from views.profile_view import load_profile
 
+import flet as ft
+from utils.jwt_utils import decode_jwt
+from views.books_view import load_books, add_book_page
+from views.profile_view import load_profile
+
 def main_page(page: ft.Page):
     page.clean()
+    page.bgcolor = '#212121'
 
     # Verificar si el usuario está autenticado
     jwt_token = page.client_storage.get("jwt")
@@ -19,70 +25,101 @@ def main_page(page: ft.Page):
 
     page.title = f"Biblioteca - {user_name}"
 
-    # Crear el panel izquierdo
-    def show_view(view_name):
-        content_panel.controls.clear()
-        if view_name == "Inicio":
-            content_panel.controls.append(ft.Text("Vista de Inicio", size=20))
-        elif view_name == "Libros":
-            load_books(page, content_panel)
-        elif view_name == "Agregar Libro":
-            add_book_page(page, content_panel, user_email)
-        elif view_name == "Perfil":
-            load_profile(page, content_panel, user_name, user_email)
-        elif view_name == "Configuración":
-            content_panel.controls.append(ft.Text("Vista de Configuración", size=20))
-        content_panel.update()
+    # Crear la columna para el contenido principal primero
+    body_column = ft.Column(
+        [ft.Text(f"Bienvenido, {user_name}!", size=20)],
+        alignment=ft.MainAxisAlignment.START,
+        expand=True,
+    )
 
+    # Función para manejar el cambio de vista
+    def show_view(view_name):
+        body_column.controls.clear()
+        if view_name == "Inicio":
+            body_column.controls.append(ft.Text("Vista de Inicio", size=20, color=ft.colors.WHITE))
+        elif view_name == "Libros":
+            load_books(page, body_column)
+        elif view_name == "Agregar Libro":
+            add_book_page(page, body_column, user_email)
+        elif view_name == "Perfil":
+            load_profile(page, body_column, user_name, user_email)
+        elif view_name == "Configuración":
+            body_column.controls.append(ft.Text("Vista de Configuración", size=20))
+        # No llamamos a update() aquí porque el control aún no está en la página
+        body_column.update()
     def logout(e):
         page.client_storage.remove("jwt")
         page.go("/login")
 
-    # Botones de navegación
-    navigation_buttons = ft.Column(
-        [
-            ft.Text(f"Bienvenido, {user_name}!", size=20, color=ft.colors.GREEN),
-            ft.ElevatedButton("Inicio", on_click=lambda e: show_view("Inicio")),
-            ft.ElevatedButton("Libros", on_click=lambda e: show_view("Libros")),
-            ft.ElevatedButton("Agregar Libro", on_click=lambda e: show_view("Agregar Libro")),
-            ft.ElevatedButton("Perfil", on_click=lambda e: show_view("Perfil")),
-            ft.ElevatedButton("Configuración", on_click=lambda e: show_view("Configuración")),
+    # NavigationRail
+    rail = ft.NavigationRail(
+        selected_index=0,
+        label_type=ft.NavigationRailLabelType.ALL,
+        min_width=56,
+        min_extended_width=2160,
+        group_alignment=-0.9,
+        destinations=[
+            ft.NavigationRailDestination(
+                icon=ft.icons.HOME_OUTLINED,
+                selected_icon=ft.icons.HOME,
+                label="Inicio",
+            ),
+            ft.NavigationRailDestination(
+                icon=ft.icons.BOOK_OUTLINED,
+                selected_icon=ft.icons.BOOK,
+                label="Libros",
+            ),
+            ft.NavigationRailDestination(
+                icon=ft.icons.ADD,
+                selected_icon=ft.icons.ADD,
+                label="Agregar Libro",
+            ),
+            ft.NavigationRailDestination(
+                icon=ft.icons.PERSON_OUTLINED,
+                selected_icon=ft.icons.PERSON,
+                label="Perfil",
+            ),
+            ft.NavigationRailDestination(
+                icon=ft.icons.SETTINGS_OUTLINED,
+                selected_icon=ft.icons.SETTINGS,
+                label="Configuración",
+            ),
         ],
-        alignment=ft.MainAxisAlignment.START,
-        spacing=10,
+        on_change=lambda e: show_view(e.control.destinations[e.control.selected_index].label),
     )
 
-    # Botón de logout al final
-    logout_button = ft.Container(
-        ft.ElevatedButton("Logout", on_click=logout),
-        alignment=ft.alignment.bottom_center,
+    # Botón de logout flotante
+    fab = ft.FloatingActionButton(
+        text="Logout",
+        icon=ft.icons.LOGOUT,
+        tooltip="Cerrar sesión",
+        on_click=logout,
+        bgcolor=ft.colors.RED_400,
     )
 
-    # Contenedor del panel izquierdo
-    sidebar = ft.Container(
-        ft.Column(
+    # Diseño de la página
+    page.add(
+        ft.Row(
             [
-                navigation_buttons,
-                logout_button,
+                rail,
+                ft.VerticalDivider(width=1),
+                ft.Stack(
+                    [
+                        body_column,
+                        ft.Row(
+                            [fab],
+                            alignment=ft.MainAxisAlignment.END,
+                            vertical_alignment=ft.CrossAxisAlignment.END,
+                            expand=True,
+                        )
+                    ],
+                    expand=True,
+                )
             ],
             expand=True,
-            alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
-        ),
-        width=200,
-        bgcolor=ft.colors.BLUE_GREY_100,
+        )
     )
-
-    # Crear el área de contenido principal
-    content_panel = ft.Column(
-        [ft.Text("Selecciona una opción del menú", size=20)],
-        expand=True,
-    )
-
-    # Disponer el panel izquierdo y el área de contenido en un Row
-    layout = ft.Row(
-        [sidebar, content_panel],
-        expand=True,
-    )
-
-    page.add(layout)
+    
+    # Ahora que body_column está en la página, podemos llamar a show_view
+    show_view("Inicio")
     page.update()
