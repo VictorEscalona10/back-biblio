@@ -28,7 +28,6 @@ export const getBook = async (req, res) => {
 };
 
 export const createBook = async (req, res) => {
-    const upload = multer({ storage: multer.memoryStorage() }); 
     try {
         const { title, year, author, file_link } = req.body;
         const { data, error } = await supabase.from('books').insert({ title, year, author, file_link });

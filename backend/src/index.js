@@ -11,12 +11,14 @@ app.use(cookieParser());
 app.use(express.json());
 
 app.get('/', (req, res) => {
-    res.send('Hello World');
+    const name = req.body.name;
+    res.send(`hola ${name}`);
 });
 
 app.use('/auth', authRoutes);
 app.use('/users', usersRoutes);
 app.use('/books', booksRoutes);
+
 app.listen(config.PORT, () => {
     console.log(`Server is running on port ${config.PORT}`);
 });
