@@ -6,6 +6,7 @@ config.local.py
 
 # Archivos de Node.js
 node_modules/
+package-lock.json
 
 # Archivos de Python
 *__pycache__/
