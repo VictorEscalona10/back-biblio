@@ -32,7 +32,7 @@ def main_page(page: ft.Page):
     def show_view(view_name):
         body_column.controls.clear()
         if view_name == "Inicio":
-            body_column.controls.append(ft.Text("Vista de Inicio", size=20, color=ft.colors.WHITE))
+            body_column.controls.append(ft.Text("Bienvenido a la Biblioteca", size=20, color=ft.colors.WHITE))
         elif view_name == "Libros":
             load_books(page, body_column)
         elif view_name == "Agregar Libro":
