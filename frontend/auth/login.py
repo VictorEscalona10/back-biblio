@@ -16,7 +16,7 @@ def login_page(page: ft.Page):
     email_input = ft.TextField(label="Email", width=300, color=ft.colors.WHITE)
     password_input = ft.TextField(label="Password", password=True, width=300, color=ft.colors.WHITE)
     login_button = ft.ElevatedButton(text="Login",color=ft.colors.WHITE, bgcolor="#212121", width=300,height=35, on_click=lambda e: login(e, page, message, email_input, password_input), style=ft.ButtonStyle(shape=ft.RoundedRectangleBorder(radius=4)))
-    register_button = ft.ElevatedButton("Registrarse", on_click=show_register, color=ft.colors.WHITE, bgcolor="#212121", width=118,height=35, style=ft.ButtonStyle(shape=ft.RoundedRectangleBorder(radius=4)))
+    register_button = ft.ElevatedButton("Registrarse", on_click=show_register, color=ft.colors.WHITE, bgcolor="#212121", width=118,height=35, style=ft.ButtonStyle(shape=ft.RoundedRectangleBorder(radius=2)))
 
     page.title = "Biblioteca - login"
     page.vertical_alignment = ft.MainAxisAlignment.CENTER
