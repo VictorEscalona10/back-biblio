@@ -1,6 +1,7 @@
 import flet as ft
 from utils.jwt_utils import decode_jwt
-from views.books_view import load_books, add_book_page
+from views.books_view import load_books
+from views.add_books_admin import add_book_page_admin
 from views.profile_view import load_profile
 
 def admin_page(page: ft.Page):
@@ -32,16 +33,20 @@ def admin_page(page: ft.Page):
         body_column.controls.clear()
         if view_name == "Inicio":
             body_column.controls.append(ft.Text("Vista de Administrador", size=20, color=ft.colors.WHITE))
+        
         elif view_name == "Libros":
             load_books(page, body_column)
+            
         elif view_name == "Agregar Libro":
-            add_book_page(page, body_column, user_email)
+            add_book_page_admin(page, body_column, user_email)
+
         elif view_name == "Perfil":
             load_profile(page, body_column, user_name, user_email)
+        
         elif view_name == "Configuración":
             body_column.controls.append(ft.Text("Vista de Configuración", size=20))
-        # No llamamos a update() aquí porque el control aún no está en la página
         body_column.update()
+        
     def logout(e):
         page.client_storage.remove("jwt")
         page.go("/login")
