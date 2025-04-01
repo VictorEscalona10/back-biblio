@@ -1,6 +1,5 @@
 import flet as ft
 import requests
-import webbrowser
 from utils.constants import BASE_URL
 
 def add_book_page_admin(page: ft.Page, body_column: ft.Column, user_email: str):
@@ -30,7 +29,7 @@ def add_book_page_admin(page: ft.Page, body_column: ft.Column, user_email: str):
             }
         )
 
-        if response.status_code == 201:
+        if response.status_code == 200:
             message_label.value = "Libro agregado correctamente"
             message_label.color = ft.colors.GREEN
             page.snack_bar = ft.SnackBar(ft.Text("Libro agregado correctamente"))
