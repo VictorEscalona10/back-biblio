@@ -3,6 +3,7 @@ from utils.jwt_utils import decode_jwt
 from views.books_view import load_books
 from views.add_books_admin import add_book_page_admin
 from views.profile_view import load_profile
+from views.update_books_admin import update_book_page
 
 def admin_page(page: ft.Page):
     page.clean()
@@ -40,13 +41,16 @@ def admin_page(page: ft.Page):
         elif view_name == "Agregar Libro":
             add_book_page_admin(page, body_column, user_email)
 
+        elif view_name == "Actualizar Libro":
+            update_book_page(page, body_column, user_email)
+
         elif view_name == "Perfil":
             load_profile(page, body_column, user_name, user_email)
         
         elif view_name == "Configuración":
             body_column.controls.append(ft.Text("Vista de Configuración", size=20))
         body_column.update()
-        
+
     def logout(e):
         page.client_storage.remove("jwt")
         page.go("/login")
@@ -75,6 +79,11 @@ def admin_page(page: ft.Page):
                 label="Agregar Libro",
             ),
             ft.NavigationRailDestination(
+                icon=ft.icons.UPDATE_OUTLINED,
+                selected_icon=ft.icons.UPDATE,
+                label="Actualizar Libro",
+            ),
+            ft.NavigationRailDestination(
                 icon=ft.icons.PERSON_OUTLINED,
                 selected_icon=ft.icons.PERSON,
                 label="Perfil",
@@ -84,6 +93,7 @@ def admin_page(page: ft.Page):
                 selected_icon=ft.icons.SETTINGS,
                 label="Configuración",
             ),
+
         ],
         on_change=lambda e: show_view(e.control.destinations[e.control.selected_index].label),
     )

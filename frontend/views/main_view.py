@@ -41,7 +41,6 @@ def main_page(page: ft.Page):
             load_profile(page, body_column, user_name, user_email)
         elif view_name == "Configuración":
             body_column.controls.append(ft.Text("Vista de Configuración", size=20))
-        # No llamamos a update() aquí porque el control aún no está en la página
         body_column.update()
     def logout(e):
         page.client_storage.remove("jwt")
