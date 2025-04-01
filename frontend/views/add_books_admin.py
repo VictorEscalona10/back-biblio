@@ -32,8 +32,12 @@ def add_book_page_admin(page: ft.Page, body_column: ft.Column, user_email: str):
 
         if response.status_code == 201:
             message_label.value = "Libro agregado correctamente"
+            message_label.color = ft.colors.GREEN
+            page.snack_bar = ft.SnackBar(ft.Text("Libro agregado correctamente"))
+            page.snack_bar.open = True
         else:
             message_label.value = "Error al agregar el libro"
+            message_label.color = ft.colors.RED
         
         title_field.value = ""
         author_field.value = ""
@@ -41,7 +45,7 @@ def add_book_page_admin(page: ft.Page, body_column: ft.Column, user_email: str):
         link_field.value = ""
         page.update()
     
-    text_fields = body_column.controls.extend([
+    body_column.controls.extend([
         ft.Text("Agregar Nuevo Libro", size=24, weight=ft.FontWeight.BOLD),
         title_field,
         message_label,
@@ -57,7 +61,6 @@ def add_book_page_admin(page: ft.Page, body_column: ft.Column, user_email: str):
                 ),
             ],
             spacing=10
-            )    
-        ]
-    )
+        )    
+    ])
     body_column.update()
