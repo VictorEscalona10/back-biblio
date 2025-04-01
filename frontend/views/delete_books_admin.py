@@ -13,41 +13,32 @@ def delete_book_page(page: ft.Page, body_column: ft.Column):
         hint_text="Ingresa el título exacto del libro",
         width=400
     )
-    
-    # Función para confirmar y ejecutar la eliminación
-    def confirm_delete(e):
-        title = title_field.value.strip()
-        if not title:
-            title_field.error_text = "Debes ingresar un título"
+        
+    # Diálogo de confirmación
+    def execute_delete(e):
+        if not title_field.value:
+            title_field.error_text = "El título es obligatorio"
             title_field.update()
             return
         
-        # Diálogo de confirmación
-        def execute_delete(e):
-            # Aquí iría tu llamada a DELETE /books con el título
-            # Ejemplo:
-            # response = requests.delete(f"{API_URL}/books", json={"title": title})
-            
-            page.dialog.open = False
-            page.snack_bar = ft.SnackBar(
-                ft.Text(f"Libro '{title}' eliminado correctamente"),
-                duration=3000
+        response = requests.delete(
+            f"{BASE_URL}/books",
+            json={
+                    "title": title_field.value,
+            }
             )
-            page.snack_bar.open = True
+            
+        if response.status_code == 200:
             title_field.value = ""
-            title_field.focus()
-            page.update()
-        
-        page.dialog = ft.AlertDialog(
-            title=ft.Text("Confirmar Eliminación"),
-            content=ft.Text(f"¿Estás seguro de eliminar el libro '{title}'?"),
-            actions=[
-                ft.TextButton("Cancelar", on_click=lambda e: setattr(page.dialog, "open", False)),
-                ft.TextButton("Eliminar", on_click=execute_delete, style=ft.ButtonStyle(color=ft.colors.RED))
-            ],
-            open=True
-        )
-        page.update()
+            title_field.update()
+        else:
+            title_field.error_text = "Error al eliminar el libro"
+            title_field.update()
+
+        title_field.value = ""
+        title_field.update()
+
+            
     
     # Diseño de la vista
     body_column.controls.extend([
@@ -60,7 +51,7 @@ def delete_book_page(page: ft.Page, body_column: ft.Column):
                 ft.ElevatedButton(
                     "Eliminar Libro",
                     icon=ft.icons.DELETE,
-                    on_click=confirm_delete,
+                    on_click=execute_delete,
                     color=ft.colors.RED
                 ),
             ],
