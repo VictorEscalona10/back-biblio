@@ -28,20 +28,16 @@ def update_user_page(page: ft.Page, body_column: ft.Column, admin_email: str):
         response = requests.put(
             f"{BASE_URL}/users",
             json=update_data,
-            headers={"Authorization": f"Bearer {page.client_storage.get('jwt')}"}
         )
 
         if response.status_code == 200:
             message_label.value = "Usuario actualizado correctamente"
             message_label.color = ft.colors.GREEN
-            page.snack_bar = ft.SnackBar(ft.Text("Usuario actualizado correctamente"))
-            page.snack_bar.open = True
         else:
             error_msg = response.json().get("error", "Error al actualizar el usuario")
             message_label.value = error_msg
             message_label.color = ft.colors.RED
         
-        # Limpiar solo el campo de contraseña por seguridad
         password_field.value = ""
         page.update()
     

@@ -1,4 +1,5 @@
 import supabase from "../lib/supabase.js";
+import bcrypt from "bcrypt";
 
 export const getUsers = async (req, res) => {
     try {
@@ -30,7 +31,8 @@ export const getUser = async (req, res) => {
 export const updateUser = async (req, res) => {
     try {
         const { email, name, password } = req.body;
-        const { data, error } = await supabase.from('users').update({ name, password }).eq('email', email);
+        const hashedPassword = await bcrypt.hash(password, 10);
+        const { data, error } = await supabase.from('users').update({ name, password: hashedPassword }).eq('email', email);
         if (error) {
             return res.status(500).json({ error: error.message });
         } else {
