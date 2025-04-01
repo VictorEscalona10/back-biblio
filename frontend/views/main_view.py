@@ -42,7 +42,7 @@ def main_page(page: ft.Page):
         elif view_name == "Configuración":
             body_column.controls.append(ft.Text("Vista de Configuración", size=20))
         body_column.update()
-    def logout(e):
+    def logojut(e):
         page.client_storage.remove("jwt")
         page.go("/login")
 
@@ -88,7 +88,7 @@ def main_page(page: ft.Page):
         text="Logout",
         icon=ft.icons.LOGOUT,
         tooltip="Cerrar sesión",
-        on_click=logout,
+        on_click=logojut,
         bgcolor=ft.colors.RED_400,
     )
 

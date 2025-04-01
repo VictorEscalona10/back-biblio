@@ -1,150 +1,66 @@
-# update_user_view.py
 import flet as ft
 import requests
 from utils.constants import BASE_URL
-from utils.jwt_utils import decode_jwt
-from views.admin_view import admin_page
 
-class UpdateUserView:
-    def __init__(self, page, jwt_token, go_back_callback, search_user_callback, update_user_callback):
-        self.page = page
-        self.jwt_token = jwt_token
-        self.go_back_callback = go_back_callback
-        self.search_user_callback = search_user_callback
-        self.update_user_callback = update_user_callback
-        self.server_response = ft.Text("", color=ft.colors.GREEN)
-        self.build_view()
-
-    def build_view(self):
-        # Campos del formulario (igual que antes)
-        self.email_input = ft.TextField(
-            label="Email del usuario a actualizar",
-            width=400,
-            autofocus=True
-        )
-        
-        self.name_input = ft.TextField(
-            label="Nuevo nombre (opcional)",
-            width=400
-        )
-        
-        self.password_input = ft.TextField(
-            label="Nueva contraseña (opcional)",
-            width=400,
-            password=True,
-            can_reveal_password=True
-        )
-
-        # Botones (igual que antes)
-        search_button = ft.ElevatedButton(
-            "Buscar Usuario",
-            icon=ft.icons.SEARCH,
-            on_click=self.search_user,
-            width=200
-        )
-        
-        update_button = ft.ElevatedButton(
-            "Actualizar Usuario",
-            icon=ft.icons.UPDATE,
-            color=ft.colors.WHITE,
-            bgcolor=ft.colors.BLUE_700,
-            on_click=self.update_user,
-            width=200
-        )
-        
-        back_button = ft.ElevatedButton(
-            "Volver",
-            icon=ft.icons.ARROW_BACK,
-            on_click=lambda e: self.go_back_callback(),
-            width=200
-        )
-
-        # Diseño de la vista (igual que antes)
-        self.view = ft.Column(
-            [
-                ft.Text("Actualizar Usuario", size=24, weight=ft.FontWeight.BOLD),
-                ft.Divider(),
-                self.email_input,
-                ft.Row([search_button], alignment=ft.MainAxisAlignment.CENTER),
-                self.name_input,
-                self.password_input,
-                ft.Row([update_button, back_button], spacing=20),
-                self.server_response
-            ],
-            spacing=20,
-            horizontal_alignment=ft.CrossAxisAlignment.CENTER,
-            width=600
-        )
-
-    async def search_user(self, e):
-        email = self.email_input.value.strip()
-        if not email:
-            self.show_response("Por favor ingrese el email del usuario", True)
+def update_user_page(page: ft.Page, body_column: ft.Column, admin_email: str):
+    body_column.controls.clear()
+    
+    email_field = ft.TextField(label="Email del usuario", autofocus=True, width=400)
+    name_field = ft.TextField(label="Nombre", width=400)
+    password_field = ft.TextField(label="Nueva contraseña", password=True, can_reveal_password=True, width=400)
+    message_label = ft.Text(value="", size=20, color=ft.colors.GREEN)
+    
+    page.vertical_alignment = ft.MainAxisAlignment.CENTER
+    page.horizontal_alignment = ft.CrossAxisAlignment.CENTER
+    
+    def submit_update(e):
+        if not email_field.value:
+            email_field.error_text = "El email es obligatorio"
+            email_field.update()
             return
-
-        # Usamos el callback en lugar de la petición HTTP directa
-        result = await self.search_user_callback(email)
         
-        if result.get("success"):
-            user_data = result.get("data", {})
-            self.name_input.value = user_data.get("name", "")
-            self.password_input.value = ""
-            self.page.update()
-            self.show_response("Usuario encontrado")
-        else:
-            self.show_response(result.get("error", "Error al buscar usuario"), True)
-
-    async def update_user(self, e):
-        email = self.email_input.value.strip()
-        if not email:
-            self.show_response("Por favor ingrese el email del usuario", True)
-            return
-
         update_data = {
-            "email": email,
-            "name": self.name_input.value if self.name_input.value else None,
-            "password": self.password_input.value if self.password_input.value else None
+            "email": email_field.value,
+            "name": name_field.value if name_field.value else None,
+            "password": password_field.value if password_field.value else None
         }
 
-        # Diálogo de confirmación (igual que antes)
-        confirm_dialog = ft.AlertDialog(
-            title=ft.Text("Confirmar actualización"),
-            content=ft.Text(f"¿Está seguro que desea actualizar el usuario '{email}'?"),
-            actions=[
-                ft.TextButton("Cancelar", on_click=self.close_dialog),
-                ft.TextButton("Actualizar", 
-                            on_click=lambda e: self.confirm_update(update_data),
-                            style=ft.ButtonStyle(color=ft.colors.BLUE)),
-            ],
+        response = requests.put(
+            f"{BASE_URL}/users",
+            json=update_data,
+            headers={"Authorization": f"Bearer {page.client_storage.get('jwt')}"}
         )
-        
-        self.page.dialog = confirm_dialog
-        confirm_dialog.open = True
-        self.page.update()
 
-    async def confirm_update(self, update_data):
-        # Usamos el callback en lugar de la petición HTTP directa
-        result = await self.update_user_callback(update_data)
-        
-        if result.get("success"):
-            self.show_response(f"Usuario '{update_data['email']}' actualizado exitosamente")
-            self.name_input.value = ""
-            self.password_input.value = ""
-            self.page.update()
+        if response.status_code == 200:
+            message_label.value = "Usuario actualizado correctamente"
+            message_label.color = ft.colors.GREEN
+            page.snack_bar = ft.SnackBar(ft.Text("Usuario actualizado correctamente"))
+            page.snack_bar.open = True
         else:
-            self.show_response(result.get("error", "Error al actualizar usuario"), True)
+            error_msg = response.json().get("error", "Error al actualizar el usuario")
+            message_label.value = error_msg
+            message_label.color = ft.colors.RED
         
-        self.close_dialog(None)
-
-    def close_dialog(self, e):
-        if self.page.dialog:
-            self.page.dialog.open = False
-        self.page.update()
-
-    def show_response(self, message, is_error=False):
-        self.server_response.value = message
-        self.server_response.color = ft.colors.RED if is_error else ft.colors.GREEN
-        self.server_response.update()
-
-    def get_view(self):
-        return self.view
+        # Limpiar solo el campo de contraseña por seguridad
+        password_field.value = ""
+        page.update()
+    
+    body_column.controls.extend([
+        ft.Text("Actualizar Usuario", size=24, weight=ft.FontWeight.BOLD),
+        email_field,
+        name_field,
+        password_field,
+        message_label,
+        ft.Row(
+            controls=[
+                ft.ElevatedButton(
+                    "Actualizar",
+                    icon=ft.icons.UPDATE,
+                    on_click=submit_update,
+                    style=ft.ButtonStyle(color=ft.colors.WHITE, bgcolor=ft.colors.BLUE)
+                ),
+            ],
+            spacing=10
+        )
+    ])
+    body_column.update()
