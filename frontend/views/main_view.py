@@ -7,32 +7,31 @@ def main_page(page: ft.Page):
     page.clean()
     page.bgcolor = '#212121'
 
+    # Verificar si el usuario está autenticado
     jwt_token = page.client_storage.get("jwt")
     if not jwt_token:
         page.go("/login")
         return
 
+    # Decodificar el JWT para obtener información del usuario
     user_info = decode_jwt(jwt_token)
     user_name = user_info.get("name", "Usuario") if user_info else "Usuario"
     user_email = user_info.get("email", None) if user_info else None
 
     page.title = f"Biblioteca - {user_name}"
 
+    # Crear la columna para el contenido principal primero
     body_column = ft.Column(
-        [],
-        alignment=ft.MainAxisAlignment.CENTER,
-        horizontal_alignment=ft.CrossAxisAlignment.CENTER,
+        [ft.Text(f"Bienvenido, {user_name}!", size=20)],
+        alignment=ft.MainAxisAlignment.START,
         expand=True,
     )
 
+    # Función para manejar el cambio de vista
     def show_view(view_name):
         body_column.controls.clear()
         if view_name == "Inicio":
-            body_column.controls.append(
-                ft.Text("Bienvenido a la Biblioteca", 
-                       size=20, 
-                       color=ft.colors.WHITE)
-            )
+            body_column.controls.append(ft.Text("Bienvenido a la Biblioteca", size=20, color=ft.colors.WHITE))
         elif view_name == "Libros":
             load_books(page, body_column)
         elif view_name == "Agregar Libro":
@@ -41,12 +40,13 @@ def main_page(page: ft.Page):
             load_profile(page, body_column, user_name, user_email)
         elif view_name == "Configuración":
             body_column.controls.append(ft.Text("Vista de Configuración", size=20))
+        # No llamamos a update() aquí porque el control aún no está en la página
         body_column.update()
-
     def logout(e):
         page.client_storage.remove("jwt")
         page.go("/login")
 
+    # NavigationRail
     rail = ft.NavigationRail(
         selected_index=0,
         label_type=ft.NavigationRailLabelType.ALL,
@@ -83,6 +83,7 @@ def main_page(page: ft.Page):
         on_change=lambda e: show_view(e.control.destinations[e.control.selected_index].label),
     )
 
+    # Botón de logout flotante
     fab = ft.FloatingActionButton(
         text="Logout",
         icon=ft.icons.LOGOUT,
@@ -91,6 +92,7 @@ def main_page(page: ft.Page):
         bgcolor=ft.colors.RED_400,
     )
 
+    # Diseño de la página
     page.add(
         ft.Row(
             [
@@ -113,5 +115,6 @@ def main_page(page: ft.Page):
         )
     )
     
+    # Ahora que body_column está en la página, podemos llamar a show_view
     show_view("Inicio")
     page.update()
