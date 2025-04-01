@@ -4,7 +4,11 @@ from views.books_view import load_books
 from views.add_books_admin import add_book_page_admin
 from views.profile_view import load_profile
 from views.update_books_admin import update_book_page
+<<<<<<< HEAD
 from
+=======
+from views.delete_books_admin import delete_book_page
+>>>>>>> 91316420ac7df00db2e32e5eb41c79d55ead69d7
 
 def admin_page(page: ft.Page):
     page.clean()
@@ -45,6 +49,9 @@ def admin_page(page: ft.Page):
         elif view_name == "Actualizar Libro":
             update_book_page(page, body_column, user_email)
 
+        elif view_name == "Eliminar Libro":
+            delete_book_page(page, body_column)
+
         elif view_name == "Perfil":
             load_profile(page, body_column, user_name, user_email)
         
@@ -83,6 +90,11 @@ def admin_page(page: ft.Page):
                 icon=ft.icons.UPDATE_OUTLINED,
                 selected_icon=ft.icons.UPDATE,
                 label="Actualizar Libro",
+            ),
+            ft.NavigationRailDestination(
+                icon=ft.icons.DELETE_OUTLINED,
+                selected_icon=ft.icons.DELETE,
+                label="Eliminar Libro",
             ),
             ft.NavigationRailDestination(
                 icon=ft.icons.PERSON_OUTLINED,
